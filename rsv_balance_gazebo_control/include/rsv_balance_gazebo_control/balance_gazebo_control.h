@@ -26,11 +26,15 @@ enum INPUTS
   tauR
 };
 
+/**
+* Controller with simplest interface.
+* Just enough to work.
+*/
+/** @todo How to log internal data of the controller? */
 class BalanceControl
 {
   public:
     BalanceControl();
-    ~BalanceControl();
 
     void resetControl();
     void stepControl(double dt, const double (&x_desired)[4], const double (&y_fbk)[4]);
@@ -43,7 +47,7 @@ class BalanceControl
     double x_reference[4];
     double x_r[4];
     double x_adjust[4];
-    double u_in[2];
+    double u_output[2];
 };
 
 }  // namespace balance_control

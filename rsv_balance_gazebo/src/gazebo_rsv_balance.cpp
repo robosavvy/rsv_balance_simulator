@@ -145,6 +145,11 @@ void GazeboRsvBalance::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&GazeboRsvBalance::UpdateChild, this));
 }
 
+/*!
+* \brief Resets simulation variables.
+* 
+* Used when starting and when gazebo reset world or model
+*/
 void GazeboRsvBalance::resetVariables()
 {
   this->x_desired_ = 0;
@@ -153,6 +158,9 @@ void GazeboRsvBalance::resetVariables()
   this->odom_offset_rot_ = math::Vector3(0, 0, 0);
 }
 
+/*!
+* \brief Sets platform operating mode.
+*/
 bool GazeboRsvBalance::setMode(rsv_balance_msgs::SetMode::Request  &req)
 {
   // Ugly implementation means bad concept
@@ -176,6 +184,9 @@ bool GazeboRsvBalance::setMode(rsv_balance_msgs::SetMode::Request  &req)
   return true;
 }
 
+/*!
+* \brief Just exposes service. Not used in simulation
+*/
 bool GazeboRsvBalance::setInput(rsv_balance_msgs::SetInput::Request  &req)
 {
   // In simulation input should always be serial communication.
@@ -183,6 +194,9 @@ bool GazeboRsvBalance::setInput(rsv_balance_msgs::SetInput::Request  &req)
   return true;
 }
 
+/*!
+* \brief Just exposes service. Not used in simulation
+*/
 bool GazeboRsvBalance::resetOverride(std_srvs::Empty::Request  &req)
 {
   // In simulation we don't have RC override, nothing to reset
@@ -190,6 +204,9 @@ bool GazeboRsvBalance::resetOverride(std_srvs::Empty::Request  &req)
   return true;
 }
 
+/*!
+* \brief Service to reset odometry.
+*/
 bool GazeboRsvBalance::resetOdom(std_srvs::Empty::Request  &req)
 {
   ROS_INFO("%s: Reset Odom", this->gazebo_ros_->info());
@@ -197,17 +214,26 @@ bool GazeboRsvBalance::resetOdom(std_srvs::Empty::Request  &req)
   return true;
 }
 
+/*!
+* \brief Callback to cmd_vel
+*/
 void GazeboRsvBalance::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& cmd_msg)
 {
   this->x_desired_ = cmd_msg->linear.x;
   this->rot_desired_ = cmd_msg->angular.z;
 }
 
+/*!
+* \brief Callback to cmd_tilt
+*/
 void GazeboRsvBalance::cmdTiltCallback(const std_msgs::Float64::ConstPtr& cmd_tilt)
 {
   this->tilt_desired_ = cmd_tilt->data;
 }
 
+/*!
+* \brief Gets pitch angle values directly from Gazebo world
+*/
 void GazeboRsvBalance::updateIMU()
 {
   // Store pitch and dpitch
@@ -217,6 +243,10 @@ void GazeboRsvBalance::updateIMU()
   this->imu_dpitch_ = veul.y;
 }
 
+/*!
+* \brief Resets odometry by adding offset to WORLD odometry, and resetting odometry values.
+*/
+/** @todo Actually implement it */
 void GazeboRsvBalance::resetOdometry()
 {
   math::Pose pose = this->parent_->GetWorldPose();
@@ -224,6 +254,10 @@ void GazeboRsvBalance::resetOdometry()
   this->odom_offset_rot_.z = pose.rot.GetYaw();
 }
 
+/*!
+* \brief Updates odometry, from Gazebo world or from encoders.
+*/
+/** @todo Implement encoder odometry */
 void GazeboRsvBalance::updateOdometry()
 {
   double ang_velocity_left = -this->joints_[LEFT]->GetVelocity(0);
@@ -261,6 +295,9 @@ void GazeboRsvBalance::updateOdometry()
   }
 }
 
+/*!
+* \brief Publishes odometry and desired tfs
+*/
 void GazeboRsvBalance::publishOdometry()
 {
   ros::Time current_time = ros::Time::now();
@@ -296,6 +333,9 @@ void GazeboRsvBalance::publishOdometry()
   }
 }
 
+/*!
+* \brief Publishes wheel joint_states
+*/
 void GazeboRsvBalance::publishWheelJointState()
 {
   ros::Time current_time = ros::Time::now();
@@ -315,6 +355,9 @@ void GazeboRsvBalance::publishWheelJointState()
   this->joint_state_publisher_.publish(joint_state);
 }
 
+/*!
+* \brief Called when Gazebo resets world
+*/
 void GazeboRsvBalance::Reset()
 {
   this->resetVariables();
@@ -328,6 +371,9 @@ void GazeboRsvBalance::Reset()
   this->feedback_w_ = 0;
 }
 
+/*!
+* \brief Gazebo step update
+*/
 void GazeboRsvBalance::UpdateChild()
 {
   common::Time current_time = this->parent_->GetWorld()->GetSimTime();
@@ -383,6 +429,9 @@ void GazeboRsvBalance::UpdateChild()
   };
 }
 
+/*!
+* \brief Called by gazebo upon exiting
+*/
 void GazeboRsvBalance::FiniChild()
 {
   this->alive_ = false;

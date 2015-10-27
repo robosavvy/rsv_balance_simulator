@@ -39,7 +39,9 @@ namespace gazebo
 
 class Joint;
 class Entity;
-
+/**
+* Gazebo Plugin which controls the balance platform just like the real thing.
+*/
 class GazeboRsvBalance: public ModelPlugin
 {
   enum
@@ -128,7 +130,7 @@ class GazeboRsvBalance: public ModelPlugin
     double imu_dpitch_;
     double feedback_v_;
     double feedback_w_;
-    math::Vector3 odom_offset_pos_;  //  Odometry can be reset using by setting an offset
+    math::Vector3 odom_offset_pos_;
     math::Vector3 odom_offset_rot_;
 
     void resetVariables();

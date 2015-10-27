@@ -10,6 +10,11 @@ namespace balance_control
 
 BalanceControl::BalanceControl() {}
 
+/*!
+* \brief Resets all state and control variables.
+*
+* Useful when instantiating and reseting the control.
+*/
 void BalanceControl::resetControl()
 {
   t = 0;
@@ -19,10 +24,18 @@ void BalanceControl::resetControl()
     x_adjust[i] = 0;
     x_r[i] = 0;
   }
-  u_in[0] = 0.0;
-  u_in[1] = 0.0;
+  u_output[0] = 0.0;
+  u_output[1] = 0.0;
 }
 
+/*!
+* \brief Integrates control and models.
+*
+* Integrates control with Euler method.
+* \param dt       Step period.
+* \param x_desired        Input array[4] for goal state
+* \param y_fbk       Array[4] for sensor readings
+*/
 void BalanceControl::stepControl(double dt, const double (&x_desired)[4], const double (&y_fbk)[4])
 {
   t += dt;
@@ -54,11 +67,11 @@ void BalanceControl::stepControl(double dt, const double (&x_desired)[4], const 
   dx_hat[dtheta]  = A[3][0]*x_hat_x_ref[theta] + A[3][1]*x_hat_x_ref[dx]
                   + A[3][2]*x_hat_x_ref[dphi]  + A[3][3]*x_hat_x_ref[dtheta];
 
-  // + B*u_in
-  dx_hat[theta]  += B[0][0]*u_in[tauL] + B[0][1]*u_in[tauR];
-  dx_hat[dx]     += B[1][0]*u_in[tauL] + B[1][1]*u_in[tauR];
-  dx_hat[dphi]   += B[2][0]*u_in[tauL] + B[2][1]*u_in[tauR];
-  dx_hat[dtheta] += B[3][0]*u_in[tauL] + B[3][1]*u_in[tauR];
+  // + B*u_output
+  dx_hat[theta]  += B[0][0]*u_output[tauL] + B[0][1]*u_output[tauR];
+  dx_hat[dx]     += B[1][0]*u_output[tauL] + B[1][1]*u_output[tauR];
+  dx_hat[dphi]   += B[2][0]*u_output[tauL] + B[2][1]*u_output[tauR];
+  dx_hat[dtheta] += B[3][0]*u_output[tauL] + B[3][1]*u_output[tauR];
 
   // y - C*x_hat - x_desired
   float yC[4];
@@ -105,14 +118,19 @@ void BalanceControl::stepControl(double dt, const double (&x_desired)[4], const 
   //**************************************************************
   // Feedback control
   //**************************************************************
-  u_in[tauL] = -(K[0][0]*(x_hat[theta]-x_reference[theta]) + K[0][1]*(x_hat[dx]-x_reference[dx])
+  u_output[tauL] = -(K[0][0]*(x_hat[theta]-x_reference[theta]) + K[0][1]*(x_hat[dx]-x_reference[dx])
                   + K[0][2]*(x_hat[dphi]-x_reference[dphi]) + K[0][3]*x_hat[dtheta]);
-  u_in[tauR] = -(K[1][0]*(x_hat[theta]-x_reference[theta]) + K[1][1]*(x_hat[dx]-x_reference[dx])
+  u_output[tauR] = -(K[1][0]*(x_hat[theta]-x_reference[theta]) + K[1][1]*(x_hat[dx]-x_reference[dx])
                   + K[1][2]*(x_hat[dphi]-x_reference[dphi]) + K[1][3]*x_hat[dtheta]);
 }
 
+/*!
+* \brief Set up the output array.
+*
+* Returns the address of the actuator torque array[2]
+*/
 double *BalanceControl::getControl()
 {
-  return u_in;
+  return u_output;
 }
 }  // namespace balance_control
