@@ -2,7 +2,7 @@
  *  Copyright (c) 2015 Robosavvy Ltd.
  *  Author: Vitor Matos
  *
- *  Based on diff_drive_plugin //TODO
+ *  Based on diff_drive_plugin
  *********************************************************************/
 
 #include "gazebo_rsv_balance/gazebo_rsv_balance.h"
@@ -298,6 +298,7 @@ void GazeboRsvBalance::updateOdometry()
 /*!
 * \brief Publishes odometry and desired tfs
 */
+/** @todo User configurable covariance */
 void GazeboRsvBalance::publishOdometry()
 {
   ros::Time current_time = ros::Time::now();
