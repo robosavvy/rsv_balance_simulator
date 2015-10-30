@@ -29,7 +29,7 @@ void GazeboRsvBalance::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
   this->gazebo_ros_->isInitialized();
 
   // Obtain parameters from rosparam
-  this->gazebo_ros_->getParameter<bool>(this->publish_odom_tf_, "publishOdomTF", false);
+  this->gazebo_ros_->getParameter<bool>(this->publish_odom_tf_, "publishOdomTF", true);
   this->gazebo_ros_->getParameter<bool>(this->publish_wheel_joint_, "publishWheelJointState", true);
 
   this->gazebo_ros_->getParameter<std::string>(this->command_topic_, "commandTopic", "cmd_vel");
