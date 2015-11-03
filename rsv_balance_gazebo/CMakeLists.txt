@@ -3,6 +3,7 @@ project(rsv_balance_gazebo)
 
 find_package(catkin REQUIRED COMPONENTS 
   gazebo_plugins
+  gazebo_ros
   geometry_msgs
   nav_msgs
   roslaunch

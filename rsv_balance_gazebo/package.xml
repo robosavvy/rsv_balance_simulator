@@ -12,7 +12,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
-  <build_depend>gazebo</build_depend>
+  <build_depend>gazebo_ros</build_depend>
   <build_depend>gazebo_plugins</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>roslint</build_depend>
@@ -32,6 +32,7 @@
   <run_depend>geometry_msgs</run_depend>
   <run_depend>nav_msgs</run_depend>
   <run_depend>sensor_msgs</run_depend>
+  <run_depend>rsv_balance_description</run_depend>
   <run_depend>rsv_balance_gazebo_control</run_depend>
   <run_depend>rsv_balance_msgs</run_depend>
   
